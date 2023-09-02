@@ -7,9 +7,24 @@
   </head>
 
   <body>
-    <h1>CHAT CLIENT</h1>
-    <ul id='chatHistory'></ul>
-    <input type='text' id='newMessage'></input>
-    <button id='send'>Send Message</button>
+    <div id='connectionManager'>
+      <h1>HOME PAGE</h1>
+      <form>
+        <label for='username'>Username</label>
+        <input type='text' id='username' required />
+        <label for='server'>Server</label>
+        <input type='text' id='server' required />
+        <button id='connect'>Connect to Server</button>
+      </form>
+    </div>
+    <hr/>
+    <div id='chatManager'>
+      <h1>CHAT CLIENT</h1>
+      <ul id='chatHistory'></ul>
+      <form>
+        <input type='text' id='newMessage' required />
+        <button id='send'>Send Message</button>
+      </form>
+    </div>
   </body>
 </html>
