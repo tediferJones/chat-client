@@ -2,8 +2,8 @@
 // const socket = new WebSocket('ws://localhost:8000')
 // console.log(ws)
 let socket;
-let username = '';
-let server = '';
+// let username = '';
+// let server = '';
 
 document.querySelector('#connect').addEventListener('click', (e) => {
   e.preventDefault();
@@ -22,37 +22,53 @@ document.querySelector('#connect').addEventListener('click', (e) => {
   }
   // socket = new WebSocket('ws://localhost:8000', `${server}-${username}`)
   socket = new WebSocket('ws://localhost:8000?' + new URLSearchParams({ username, server }))
-  console.log(socket)
+  console.log(socket.readyState)
   // SEND VALIDATION AND CHECK RESULT HERE
 
-  // socket.onopen = (idk) => {
-  //   console.log(idk)
-  // }
+  socket.onopen = () => {
+    const container = document.createElement('li');
+    container.textContent = `Connected to server: ${server}`
+    document.querySelector('#chatHistory').appendChild(container)
 
-  socket.onmessage = ({ data }) => {
-    // console.log(data)
-    data.text().then(data => {
-      const newMessage = JSON.parse(data);
-      const container = document.createElement('li')
-      container.textContent = newMessage.username + ': ' + newMessage.message;
-      document.querySelector('#chatHistory').appendChild(container)
+    // Create button so user can manually close their websocket
+    const closeConnection = document.createElement('button');
+    closeConnection.id = `${server}-${username}`;
+    closeConnection.textContent = server;
+    closeConnection.addEventListener('click', () => {
+      socket.close()
     })
+    document.querySelector('#currentConnections').appendChild(closeConnection);
   }
 
-  // APPEND A BUTTON WITH EVENTLISTENER THAT WILL TRIGGER socket.close()
+  socket.onclose = () => {
+    const container = document.createElement('li');
+    container.textContent = `Disconnected from server: ${server}`
+    document.querySelector('#chatHistory').appendChild(container)
+    // Remove button to close websocket when websocket closes
+    document.querySelector('#currentConnections').removeChild(document.querySelector(`#${server}-${username}`))
+  }
+
+  socket.onmessage = ({ data }) => {
+    const container = document.createElement('li')
+    container.textContent = data;
+    document.querySelector('#chatHistory').appendChild(container)
+  }
 })
 
 document.querySelector('#send').addEventListener('click', (e) => {
   e.preventDefault();
 
-  if (username && server) {
-    data = JSON.stringify({
-      message: document.querySelector('#newMessage').value,
-      username,
-      server,
-    })
-    socket.send(data)
+  if (document.querySelector('#connectionError')) {
+    document.querySelector('#chatManager').removeChild(document.querySelector('#connectionError'));
+  }
+
+  if (socket && socket.readyState === 1) {
+    socket.send(document.querySelector('#newMessage').value)
   } else {
-    console.log('you have no username or server selected')
+    // console.log('you have no username or server selected')
+    const connectionError = document.createElement('div');
+    connectionError.id = 'connectionError'
+    connectionError.textContent = 'You are not connected to any servers';
+    document.querySelector('#chatManager').appendChild(connectionError)
   }
 })
