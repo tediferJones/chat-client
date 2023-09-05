@@ -9,12 +9,12 @@
   <body>
     <div id='connectionManager'>
       <h1>HOME PAGE</h1>
-      <form>
+      <form id='newConnection'>
         <label for='username'>Username</label>
         <input type='text' id='username' required />
-        <label for='server'>Server</label>
-        <input type='text' id='server' required />
-        <button id='connect' type='submit'>Connect to Server</button>
+        <label for='servername'>Server</label>
+        <input type='text' id='servername' required />
+        <button type='submit'>Connect to Server</button>
       </form>
     </div>
 
@@ -28,9 +28,9 @@
     <div id='chatManager'>
       <h1>CHAT CLIENT</h1>
       <ul id='chatHistory'></ul>
-      <form>
+      <form id='sendMessage'>
         <input type='text' id='newMessage' required />
-        <button id='send'>Send Message</button>
+        <button type='submit'>Send Message</button>
       </form>
     </div>
   </body>
