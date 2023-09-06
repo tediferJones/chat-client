@@ -21,63 +21,63 @@
 //    - the socket var could be deleted now that we can manually close the socket
 // Try to remove the global socket var from client.js
 //    - If possible also remove it from index.js
-// get tailwind working in this project
-// get a bundler installed
+// get tailwind working in this project (just drop in a script tag for dev, use tailwind CLI to generate css file for production)
+// get a bundler installed (we literally dont need a bundler, we have no modules to bundle)
 
 const express = require('express');
 const WebSocket = require('ws');
 
-const webSocketPort = 8000 // Might need to use 443 in production
+// const webSocketPort = 8000 // Might need to use 443 in production
 const websitePort = 3000
 
-const webSocketServer = new WebSocket.Server({ port: webSocketPort })
 
 // { servername: usersArray }
 const servers = {};
 
-webSocketServer.on('connection', (newClientSocket, req) => {
-  // Add user info to the servers obj
-  //
-  // DOUBLE CHECK PORT, SERVERNAME, AND USERNAME, are all 'valid'
-  const params = new URLSearchParams(req.url.slice(req.url.indexOf('?')))
-  newClientSocket.username = params.get('username');
-  newClientSocket.servername = params.get('servername')
-  let currentServer = servers[newClientSocket.servername];
-
-  if (currentServer) {
-    for (let i = 0; i < currentServer.length; i++) {
-      if (newClientSocket.username === currentServer[i].username) {
-        newClientSocket.send('Username is already taken, please join a different chatroom or change your username')
-        newClientSocket.close();
-        return
-      }
-    }
-    currentServer.push(newClientSocket)
-  } else {
-    // Set both currentServer and servers[newServerName] to an array containing newClientSocket
-    currentServer = servers[newClientSocket.servername] = [newClientSocket];
-  }
-
-  // When socket closes, remove socket from servers obj 
-  // (this will free the username for future connections)
-  // This only applies to sockets that have passed username checking, 
-  // if your username is a duplicate you wont get added to servers obj anyways
-  newClientSocket.on('close', () => {
-    for (let i = 0; i < currentServer.length; i++) {
-      if (currentServer[i].username === newClientSocket.username) {
-        currentServer.splice(i, 1);
-        break;
-      }
-    }
-  })
-
-  // Send messages to the right chatRooms
-  newClientSocket.on('message', message => {
-    servers[newClientSocket.servername].forEach(existingSocket => {
-      existingSocket.send(`${newClientSocket.username}: ${message.toString()}`)
-    })
-  })
-})
+// const webSocketServer = new WebSocket.Server({ port: webSocketPort })
+// webSocketServer.on('connection', (newClientSocket, req) => {
+//   // Add user info to the servers obj
+//   //
+//   // DOUBLE CHECK PORT, SERVERNAME, AND USERNAME, are all 'valid'
+//   const params = new URLSearchParams(req.url.slice(req.url.indexOf('?')))
+//   newClientSocket.username = params.get('username');
+//   newClientSocket.servername = params.get('servername')
+//   let currentServer = servers[newClientSocket.servername];
+// 
+//   if (currentServer) {
+//     for (let i = 0; i < currentServer.length; i++) {
+//       if (newClientSocket.username === currentServer[i].username) {
+//         newClientSocket.send('Username is already taken, please join a different chatroom or change your username')
+//         newClientSocket.close();
+//         return
+//       }
+//     }
+//     currentServer.push(newClientSocket)
+//   } else {
+//     // Set both currentServer and servers[newServerName] to an array containing newClientSocket
+//     currentServer = servers[newClientSocket.servername] = [newClientSocket];
+//   }
+// 
+//   // When socket closes, remove socket from servers obj 
+//   // (this will free the username for future connections)
+//   // This only applies to sockets that have passed username checking, 
+//   // if your username is a duplicate you wont get added to servers obj anyways
+//   newClientSocket.on('close', () => {
+//     for (let i = 0; i < currentServer.length; i++) {
+//       if (currentServer[i].username === newClientSocket.username) {
+//         currentServer.splice(i, 1);
+//         break;
+//       }
+//     }
+//   })
+// 
+//   // Send messages to the right chatRooms
+//   newClientSocket.on('message', message => {
+//     servers[newClientSocket.servername].forEach(existingSocket => {
+//       existingSocket.send(`${newClientSocket.username}: ${message.toString()}`)
+//     })
+//   })
+// })
 
 const app = express()
 app.use(express.static('pages'))
@@ -87,26 +87,78 @@ app.get('/', (req, res) => {
 app.get('/getPort', (req, res) => {
   // Ports in the range of 49152 to 65535 are not assigned, controlled or registered
   // Thus these ports should be ideal for "temporary or private ports"
-  // THIS FUNCTION NEEDS TO TAKE THE SERVERNAME AS AN ARUGMENT
-  // Users connecting to active servers need a port that already exists
   const params = new URLSearchParams(req.url.slice(req.url.indexOf('?')))
   const servername = params.get('servername')
   const servernamesArr = Object.keys(servers)
   let port;
 
-  // const minPort = 49152
-  // const maxPort = 65535
   if (servernamesArr.includes(servername)) {
+    // SERVER ALREADY EXISTS, MAKE SURE USERNAME IS UNIQUE
+    console.log(servers[servername].port)
     port = servers[servername].port
   } else {
+    // If servername doesnt exist, find a new port and create a new webSocketServer
     const activePorts = servernamesArr.map(servername => servers[servername].port)
     port = 49152 // Lowest possible port
     while (activePorts.includes(port)) {
       port++
     }
+
+    // TESTING
+    // THEN OPEN A NEW WEBSOCKET
+    // const webSocketServer = new WebSocket.Server({ port: webSocketPort })
+    servers[servername] = new WebSocket.Server({ port }).on('connection', (newClientSocket, req) => {
+      // Add user info to the servers obj
+      //
+      // DOUBLE CHECK PORT, SERVERNAME, AND USERNAME, are all 'valid'
+      // This could probably significantly simplified
+      const params = new URLSearchParams(req.url.slice(req.url.indexOf('?')))
+      newClientSocket.username = params.get('username');
+      newClientSocket.servername = params.get('servername')
+      let currentServer = servers[newClientSocket.servername];
+      servers[servername].port = port;
+
+      // if (currentServer) {
+      //   for (let i = 0; i < currentServer.length; i++) {
+      //     if (newClientSocket.username === currentServer[i].username) {
+      //       newClientSocket.send('Username is already taken, please join a different chatroom or change your username')
+      //       newClientSocket.close();
+      //       return
+      //     }
+      //   }
+      //   currentServer.push(newClientSocket)
+      // } else {
+      //   // Set both currentServer and servers[newServerName] to an array containing newClientSocket
+      //   currentServer = servers[newClientSocket.servername] = [newClientSocket];
+      // }
+
+      // When socket closes, remove socket from servers obj 
+      // (this will free the username for future connections)
+      // This only applies to sockets that have passed username checking, 
+      // if your username is a duplicate you wont get added to servers obj anyways
+      newClientSocket.on('close', () => {
+        for (let i = 0; i < currentServer.length; i++) {
+          if (currentServer[i].username === newClientSocket.username) {
+            currentServer.splice(i, 1);
+            break;
+          }
+        }
+      })
+
+      // Send messages to the right chatRooms
+      newClientSocket.on('message', message => {
+        // servers[newClientSocket.servername].forEach(existingSocket => {
+        //   existingSocket.send(`${newClientSocket.username}: ${message.toString()}`)
+        // })
+        servers[newClientSocket.servername].clients.forEach(existingSocket => {
+          existingSocket.send(`${newClientSocket.username}: ${message.toString()}`)
+        })
+      })
+    })
   }
-  res.json({ port: port <= 65535 ? port : 0 }) // 65535 is the highest possible port
-})
+  res.json({ port: port <= 65535 ? port : 0 }); // 65535 is the highest possible port
+});
+
 app.listen(websitePort, () => {
-  console.log(`Running on port ${websitePort}`)
-})
+  console.log(`Running on port ${websitePort}`);
+});

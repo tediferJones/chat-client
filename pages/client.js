@@ -1,4 +1,5 @@
-let socket;
+// let socket;
+const connections = {};
 
 document.querySelector('#newConnection').addEventListener('submit', async(e) => {
   e.preventDefault();
@@ -12,8 +13,11 @@ document.querySelector('#newConnection').addEventListener('submit', async(e) => 
   // }
   const port = await fetch(`/getPort?servername=${servername}`).then(res => res.json())
   console.log(port)
-  socket = new WebSocket('ws://localhost:8000?' + new URLSearchParams({ username, servername }))
+  // socket = new WebSocket('ws://localhost:8000?' + new URLSearchParams({ username, servername }))
+  connections[servername] = new WebSocket(`ws://localhost:${port.port}?` + new URLSearchParams({ username, servername }));
+  // connections[servername] = new WebSocket(`ws://localhost:8000?` + new URLSearchParams({ username, servername }));
   // console.log(socket.readyState)
+  const socket = connections[servername];
 
   socket.onopen = () => {
     const container = document.createElement('li');
@@ -55,8 +59,19 @@ document.querySelector('#sendMessage').addEventListener('submit', (e) => {
     document.querySelector('#chatManager').removeChild(document.querySelector('#connectionError'));
   }
 
-  if (socket && socket.readyState === 1) {
-    socket.send(document.querySelector('#newMessage').value)
+  // if (socket && socket.readyState === 1) {
+  //   socket.send(document.querySelector('#newMessage').value)
+  // } else {
+  //   const connectionError = document.createElement('div');
+  //   connectionError.id = 'connectionError'
+  //   connectionError.textContent = 'You are not connected to any servers';
+  //   document.querySelector('#chatManager').appendChild(connectionError)
+  // }
+  if (Object.keys(connections).length) {
+    // socket.send(document.querySelector('#newMessage').value)
+    Object.keys(connections).forEach(servername => {
+      connections[servername].send(document.querySelector('#newMessage').value)
+    })
   } else {
     const connectionError = document.createElement('div');
     connectionError.id = 'connectionError'
