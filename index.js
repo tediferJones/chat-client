@@ -3,6 +3,8 @@
 // Do we want to allow the user to be in multiple chats at once?
 //    - i.e. merge two seperate chat feeds into one
 //    - If so, we will need to find some way to organize activer webSockets on the client
+//    - Is this a bad idea?  How do we handle sending a message to multiple clients but not the sender multiple times?
+//    - It would be easier to just have seperate chat rooms that run concurrently
 // Can we create a websocket for each chatRoom?
 //    - Should only use ports from 49152 to 65535
 //    - These ports are not assigned, controlled or registered
@@ -31,53 +33,8 @@ const WebSocket = require('ws');
 const websitePort = 3000
 
 
-// { servername: usersArray }
+// { servername: serverWebSocket }
 const servers = {};
-
-// const webSocketServer = new WebSocket.Server({ port: webSocketPort })
-// webSocketServer.on('connection', (newClientSocket, req) => {
-//   // Add user info to the servers obj
-//   //
-//   // DOUBLE CHECK PORT, SERVERNAME, AND USERNAME, are all 'valid'
-//   const params = new URLSearchParams(req.url.slice(req.url.indexOf('?')))
-//   newClientSocket.username = params.get('username');
-//   newClientSocket.servername = params.get('servername')
-//   let currentServer = servers[newClientSocket.servername];
-// 
-//   if (currentServer) {
-//     for (let i = 0; i < currentServer.length; i++) {
-//       if (newClientSocket.username === currentServer[i].username) {
-//         newClientSocket.send('Username is already taken, please join a different chatroom or change your username')
-//         newClientSocket.close();
-//         return
-//       }
-//     }
-//     currentServer.push(newClientSocket)
-//   } else {
-//     // Set both currentServer and servers[newServerName] to an array containing newClientSocket
-//     currentServer = servers[newClientSocket.servername] = [newClientSocket];
-//   }
-// 
-//   // When socket closes, remove socket from servers obj 
-//   // (this will free the username for future connections)
-//   // This only applies to sockets that have passed username checking, 
-//   // if your username is a duplicate you wont get added to servers obj anyways
-//   newClientSocket.on('close', () => {
-//     for (let i = 0; i < currentServer.length; i++) {
-//       if (currentServer[i].username === newClientSocket.username) {
-//         currentServer.splice(i, 1);
-//         break;
-//       }
-//     }
-//   })
-// 
-//   // Send messages to the right chatRooms
-//   newClientSocket.on('message', message => {
-//     servers[newClientSocket.servername].forEach(existingSocket => {
-//       existingSocket.send(`${newClientSocket.username}: ${message.toString()}`)
-//     })
-//   })
-// })
 
 const app = express()
 app.use(express.static('pages'))
@@ -104,12 +61,7 @@ app.get('/getPort', (req, res) => {
       port++
     }
 
-    // TESTING
-    // THEN OPEN A NEW WEBSOCKET
-    // const webSocketServer = new WebSocket.Server({ port: webSocketPort })
     servers[servername] = new WebSocket.Server({ port }).on('connection', (newClientSocket, req) => {
-      // Add user info to the servers obj
-      //
       // DOUBLE CHECK PORT, SERVERNAME, AND USERNAME, are all 'valid'
       // This could probably significantly simplified
       const params = new URLSearchParams(req.url.slice(req.url.indexOf('?')))
@@ -117,20 +69,6 @@ app.get('/getPort', (req, res) => {
       newClientSocket.servername = params.get('servername')
       let currentServer = servers[newClientSocket.servername];
       servers[servername].port = port;
-
-      // if (currentServer) {
-      //   for (let i = 0; i < currentServer.length; i++) {
-      //     if (newClientSocket.username === currentServer[i].username) {
-      //       newClientSocket.send('Username is already taken, please join a different chatroom or change your username')
-      //       newClientSocket.close();
-      //       return
-      //     }
-      //   }
-      //   currentServer.push(newClientSocket)
-      // } else {
-      //   // Set both currentServer and servers[newServerName] to an array containing newClientSocket
-      //   currentServer = servers[newClientSocket.servername] = [newClientSocket];
-      // }
 
       // When socket closes, remove socket from servers obj 
       // (this will free the username for future connections)
@@ -150,6 +88,8 @@ app.get('/getPort', (req, res) => {
         // servers[newClientSocket.servername].forEach(existingSocket => {
         //   existingSocket.send(`${newClientSocket.username}: ${message.toString()}`)
         // })
+        // SEND EACH MESSAGE TO ONE USERNAME
+        // i.e. dont send to the same username twice
         servers[newClientSocket.servername].clients.forEach(existingSocket => {
           existingSocket.send(`${newClientSocket.username}: ${message.toString()}`)
         })

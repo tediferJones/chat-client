@@ -4,6 +4,7 @@
   <head>
     <title></title>
     <script src='client.js' defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
   <body>
@@ -11,9 +12,9 @@
       <h1>HOME PAGE</h1>
       <form id='newConnection'>
         <label for='username'>Username</label>
-        <input type='text' id='username' required />
+        <input class='border-4 border-gray-300' type='text' id='username' required />
         <label for='servername'>Server</label>
-        <input type='text' id='servername' required />
+        <input class='border-4 border-gray-300' type='text' id='servername' required />
         <button type='submit'>Connect to Server</button>
       </form>
     </div>
@@ -28,8 +29,9 @@
     <div id='chatManager'>
       <h1>CHAT CLIENT</h1>
       <ul id='chatHistory'></ul>
+      <div id='chatContainer'></div>
       <form id='sendMessage'>
-        <input type='text' id='newMessage' required />
+        <input class='border-4 border-gray-300' type='text' id='newMessage' required />
         <button type='submit'>Send Message</button>
       </form>
     </div>
