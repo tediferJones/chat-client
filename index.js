@@ -46,13 +46,22 @@ app.get('/getPort', (req, res) => {
   // Thus these ports should be ideal for "temporary or private ports"
   const params = new URLSearchParams(req.url.slice(req.url.indexOf('?')))
   const servername = params.get('servername')
+  const username = params.get('username')
   const servernamesArr = Object.keys(servers)
   let port;
+  let validUsername = true;
 
   if (servernamesArr.includes(servername)) {
     // SERVER ALREADY EXISTS, MAKE SURE USERNAME IS UNIQUE
     console.log(servers[servername].port)
     port = servers[servername].port
+    servers[servername].clients.forEach(client => {
+      console.log(client.username)
+      if (client.username === username) {
+        console.log('MATCHING USERNAME')
+        validUsername = false;
+      }
+    })
   } else {
     // If servername doesnt exist, find a new port and create a new webSocketServer
     const activePorts = servernamesArr.map(servername => servers[servername].port)
@@ -96,7 +105,10 @@ app.get('/getPort', (req, res) => {
       })
     })
   }
-  res.json({ port: port <= 65535 ? port : 0 }); // 65535 is the highest possible port
+  res.json({ 
+    port: port <= 65535 ? port : 0,
+    validUsername,
+  }); // 65535 is the highest possible port
 });
 
 app.listen(websitePort, () => {
