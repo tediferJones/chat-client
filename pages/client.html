@@ -7,31 +7,36 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
-  <body>
-    <div id='connectionManager'>
-      <h1>HOME PAGE</h1>
-      <form id='newConnection'>
-        <label for='username'>Username</label>
-        <input class='border-4 border-gray-300' type='text' id='username' required />
-        <label for='servername'>Server</label>
-        <input class='border-4 border-gray-300' type='text' id='servername' required />
-        <button type='submit'>Connect to Server</button>
-      </form>
+  <body class='flex h-screen w-screen bg-gray-800 text-white'>
+    <div class='bg-gray-600'>
+      <h2>Current Connections</h2>
+      <div id='currentConnections'></div>
     </div>
 
-    <hr/>
+    <div class='w-full flex flex-col'>
+      <div class='bg-gray-600 p-4' id='connectionManager'>
+        <form class='flex flex-wrap justify-between' id='newConnection'>
+          <label class='my-auto px-2' for='username'>
+            Username
+            <input class='bg-gray-900 p-2' type='text' id='username' required />
+          </label>
+          
+          <label class='my-auto px-2' for='servername'>
+            Server
+            <input class='bg-gray-900 p-2' type='text' id='servername' required />
+          </label>
 
-    <h2>Current Connections</h2>
-    <div id='currentConnections'></div>
+          <button class='bg-blue-600 p-2' type='submit'>Connect to Server</button>
+        </form>
+      </div>
 
-    <hr/>
+      <div class='h-full p-4' id='chatContainer'>
+        <div id='connectionError'>Welcome, please connect to a chatroom</div>
+      </div>
 
-    <div id='chatManager'>
-      <h1>CHAT CLIENT</h1>
-      <div id='chatContainer'></div>
-      <form id='sendMessage'>
-        <input class='border-4 border-gray-300' type='text' id='newMessage' required />
-        <button type='submit'>Send Message</button>
+      <form class='flex' id='sendMessage'>
+        <input class='bg-gray-900 flex-1 p-4' type='text' id='newMessage' required />
+        <button class='p-4 bg-blue-600' type='submit'>Send Message</button>
       </form>
     </div>
   </body>

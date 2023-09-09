@@ -24,6 +24,9 @@ document.querySelector('#newConnection').addEventListener('submit', async(e) => 
   // connections[servername] = new WebSocket(`ws://localhost:${port.port}?` + new URLSearchParams({ username, servername }));
   // const socket = connections[servername];
   if (port.port && port.validUsername) {
+    if (document.querySelector('#connectionError')) {
+      document.querySelector('#chatContainer').removeChild(document.querySelector('#connectionError'));
+    }
     const socket = connections[servername] = new WebSocket(`ws://localhost:${port.port}?` + new URLSearchParams({ username, servername }));
 
     socket.onopen = () => {
@@ -44,8 +47,9 @@ document.querySelector('#newConnection').addEventListener('submit', async(e) => 
       })
       // Create button so user can switch view to this chat
       const selectChat = document.createElement('button');
-      selectChat.textContent = `Go To ${servername}`;
-      selectChat.className = 'bg-blue-500 p-4'
+      // selectChat.textContent = `Go To ${servername}`;
+      // selectChat.className = 'bg-blue-500 p-4'
+      selectChat.textContent = servername
       selectChat.addEventListener('click', () => {
         console.log('SWITCH CHATROOMS');
         currentServername = servername;
@@ -94,7 +98,9 @@ document.querySelector('#sendMessage').addEventListener('submit', (e) => {
   e.preventDefault();
 
   if (document.querySelector('#connectionError')) {
-    document.querySelector('#chatManager').removeChild(document.querySelector('#connectionError'));
+    // document.querySelector('#chatManager').removeChild(document.querySelector('#connectionError'));
+    // document.querySelector('#sendMessage').removeChild(document.querySelector('#connectionError'));
+    document.querySelector('#chatContainer').removeChild(document.querySelector('#connectionError'));
   }
 
   if (currentServername) {
@@ -103,6 +109,7 @@ document.querySelector('#sendMessage').addEventListener('submit', (e) => {
     const connectionError = document.createElement('div');
     connectionError.id = 'connectionError'
     connectionError.textContent = 'You are not connected to any servers';
-    document.querySelector('#chatManager').appendChild(connectionError)
+    // document.querySelector('#sendMessage').appendChild(connectionError)
+    document.querySelector('#chatContainer').appendChild(connectionError)
   }
 })
