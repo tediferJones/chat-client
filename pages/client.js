@@ -40,8 +40,12 @@ document.querySelector('#newConnection').addEventListener('submit', async(e) => 
 
       // Create button so user can manually close their websocket
       const closeConnection = document.createElement('button');
-      closeConnection.textContent = `Disconnect from ${servername}`;
-      closeConnection.className = 'bg-red-500 p-4'
+      // closeConnection.textContent = `Disconnect from ${servername}`;
+      // closeConnection.className = 'bg-red-500 p-4'
+      const closeIcon = document.createElement('i');
+      closeIcon.className = 'fa-solid fa-plug-circle-xmark fa-xl';
+      closeIcon.style.color = '#DC2626';
+      closeConnection.appendChild(closeIcon)
       closeConnection.addEventListener('click', () => {
         socket.close()
       })
@@ -50,6 +54,7 @@ document.querySelector('#newConnection').addEventListener('submit', async(e) => 
       // selectChat.textContent = `Go To ${servername}`;
       // selectChat.className = 'bg-blue-500 p-4'
       selectChat.textContent = servername
+      selectChat.className = 'flex-1 text-left';
       selectChat.addEventListener('click', () => {
         console.log('SWITCH CHATROOMS');
         currentServername = servername;
@@ -57,6 +62,7 @@ document.querySelector('#newConnection').addEventListener('submit', async(e) => 
       });
       const manageChat = document.createElement('div');
       manageChat.id = `${servername}Manager`
+      manageChat.className = 'p-4 flex justify-between';
       manageChat.appendChild(selectChat);
       manageChat.appendChild(closeConnection);
 

@@ -26,6 +26,7 @@
 // get tailwind working in this project (just drop in a script tag for dev, use tailwind CLI to generate css file for production)
 // get a bundler installed (we literally dont need a bundler, we have no modules to bundle)
 // If we want something like React, without actually using React, try VanJS
+// OR TRY BUN, its got everything we need, all in one package, supports ts and jsx out of the box
 
 const express = require('express');
 const WebSocket = require('ws');

@@ -5,11 +5,12 @@
     <title></title>
     <script src='client.js' defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/0db2e99dd7.js" crossorigin="anonymous"></script>
   </head>
 
   <body class='flex h-screen w-screen bg-gray-800 text-white'>
-    <div class='bg-gray-600'>
-      <h2>Current Connections</h2>
+    <div class='w-1/4 bg-gray-600'>
+      <h2 class='text-xl py-4 text-center'>Current Connections</h2>
       <div id='currentConnections'></div>
     </div>
 
@@ -26,7 +27,9 @@
             <input class='bg-gray-900 p-2' type='text' id='servername' required />
           </label>
 
-          <button class='bg-blue-600 p-2' type='submit'>Connect to Server</button>
+          <button class='p-2' type='submit'>
+            <i class="fa-solid fa-plug-circle-plus fa-xl" style="color: #16A34A;"></i>
+          </button>
         </form>
       </div>
 
@@ -36,7 +39,9 @@
 
       <form class='flex' id='sendMessage'>
         <input class='bg-gray-900 flex-1 p-4' type='text' id='newMessage' required />
-        <button class='p-4 bg-blue-600' type='submit'>Send Message</button>
+        <button class='p-4 bg-blue-600' type='submit'>
+          <i class="fa-solid fa-message fa-xl"></i>
+        </button>
       </form>
     </div>
   </body>
