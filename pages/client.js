@@ -111,6 +111,7 @@ document.querySelector('#sendMessage').addEventListener('submit', (e) => {
 
   if (currentServername) {
     connections[currentServername].send(document.querySelector('#newMessage').value);
+    document.querySelector('#newMessage').value = '';
   } else {
     const connectionError = document.createElement('div');
     connectionError.id = 'connectionError'

@@ -9,30 +9,29 @@
   </head>
 
   <body class='flex h-screen w-screen bg-gray-800 text-white'>
-    <div class='w-1/4 bg-gray-600'>
+    <div class='w-1/3 bg-gray-600'>
+      <form class='flex flex-wrap justify-between bg-gray-600 p-4' id='newConnection'>
+        <label class='py-2' for='username'>
+          Username:
+        </label>
+        <input class='bg-gray-900 p-2 w-full' type='text' id='username' required />
+
+        <label class='py-2' for='servername'>
+          Servername:
+        </label>
+        <input class='bg-gray-900 p-2 w-full' type='text' id='servername' required />
+
+        <button class='p-2 text-center w-full mt-4 bg-blue-500' type='submit'>
+          Connect
+          <i class="fa-solid fa-plug-circle-plus fa-xl" ></i>
+        </button>
+      </form>
+      <hr/>
       <h2 class='text-xl py-4 text-center'>Current Connections</h2>
       <div id='currentConnections'></div>
     </div>
 
     <div class='w-full flex flex-col'>
-      <div class='bg-gray-600 p-4' id='connectionManager'>
-        <form class='flex flex-wrap justify-between' id='newConnection'>
-          <label class='my-auto px-2' for='username'>
-            Username
-            <input class='bg-gray-900 p-2' type='text' id='username' required />
-          </label>
-          
-          <label class='my-auto px-2' for='servername'>
-            Server
-            <input class='bg-gray-900 p-2' type='text' id='servername' required />
-          </label>
-
-          <button class='p-2' type='submit'>
-            <i class="fa-solid fa-plug-circle-plus fa-xl" style="color: #16A34A;"></i>
-          </button>
-        </form>
-      </div>
-
       <div class='h-full p-4' id='chatContainer'>
         <div id='connectionError'>Welcome, please connect to a chatroom</div>
       </div>
