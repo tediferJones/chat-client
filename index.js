@@ -27,6 +27,9 @@
 // get a bundler installed (we literally dont need a bundler, we have no modules to bundle)
 // If we want something like React, without actually using React, try VanJS
 // OR TRY BUN, its got everything we need, all in one package, supports ts and jsx out of the box
+//
+// Lockout a username for whole server
+// i.e. when a user connects to server1 as user1, no one else should be able to use user1 until user1 closes all their connections
 
 const express = require('express');
 const WebSocket = require('ws');
