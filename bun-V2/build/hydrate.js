@@ -3,9 +3,9 @@ __commonJS,
 __toESM,
 require_jsx_dev_runtime,
 require_react
-} from "./chunk-1bb3b012c11955dc.js";
+} from "./chunk-c8d9d06d6ffbb9b4.js";
 
-// /home/ted/TOP-stuff/personal-projects/chat-client/notes/bun-V2/node_modules/scheduler/cjs/scheduler.development.js
+// /home/ted/TOP-stuff/personal-projects/chat-client/bun-V2/node_modules/scheduler/cjs/scheduler.development.js
 var require_scheduler_development = __commonJS((exports) => {
   if (true) {
     (function() {
@@ -451,7 +451,7 @@ var require_scheduler_development = __commonJS((exports) => {
   }
 });
 
-// /home/ted/TOP-stuff/personal-projects/chat-client/notes/bun-V2/node_modules/scheduler/index.js
+// /home/ted/TOP-stuff/personal-projects/chat-client/bun-V2/node_modules/scheduler/index.js
 var require_scheduler = __commonJS((exports, module) => {
   var scheduler_development = __toESM(require_scheduler_development(), 1);
   if (false) {
@@ -460,7 +460,7 @@ var require_scheduler = __commonJS((exports, module) => {
   }
 });
 
-// /home/ted/TOP-stuff/personal-projects/chat-client/notes/bun-V2/node_modules/react-dom/cjs/react-dom.development.js
+// /home/ted/TOP-stuff/personal-projects/chat-client/bun-V2/node_modules/react-dom/cjs/react-dom.development.js
 var require_react_dom_development = __commonJS((exports) => {
   var React = __toESM(require_react(), 1);
   var Scheduler = __toESM(require_scheduler(), 1);
@@ -20770,7 +20770,7 @@ var require_react_dom_development = __commonJS((exports) => {
   }
 });
 
-// /home/ted/TOP-stuff/personal-projects/chat-client/notes/bun-V2/node_modules/react-dom/index.js
+// /home/ted/TOP-stuff/personal-projects/chat-client/bun-V2/node_modules/react-dom/index.js
 var require_react_dom = __commonJS((exports, module) => {
   var react_dom_development = __toESM(require_react_dom_development(), 1);
   if (false) {
@@ -20779,7 +20779,7 @@ var require_react_dom = __commonJS((exports, module) => {
   }
 });
 
-// /home/ted/TOP-stuff/personal-projects/chat-client/notes/bun-V2/node_modules/react-dom/client.js
+// /home/ted/TOP-stuff/personal-projects/chat-client/bun-V2/node_modules/react-dom/client.js
 var require_client = __commonJS((exports) => {
   var m = __toESM(require_react_dom(), 1);
   if (false) {

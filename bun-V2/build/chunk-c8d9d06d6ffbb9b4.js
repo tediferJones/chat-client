@@ -16,7 +16,7 @@ var __toESM = (mod, isNodeMode, target) => {
 };
 var __commonJS = (cb, mod) => () => (mod || cb((mod = { exports: {} }).exports, mod), mod.exports);
 
-// /home/ted/TOP-stuff/personal-projects/chat-client/notes/bun-V2/node_modules/react/cjs/react.development.js
+// /home/ted/TOP-stuff/personal-projects/chat-client/bun-V2/node_modules/react/cjs/react.development.js
 var require_react_development = __commonJS((exports, module) => {
   if (true) {
     (function() {
@@ -1800,7 +1800,7 @@ var require_react_development = __commonJS((exports, module) => {
   }
 });
 
-// /home/ted/TOP-stuff/personal-projects/chat-client/notes/bun-V2/node_modules/react/index.js
+// /home/ted/TOP-stuff/personal-projects/chat-client/bun-V2/node_modules/react/index.js
 var require_react = __commonJS((exports, module) => {
   var react_development = __toESM(require_react_development(), 1);
   if (false) {
@@ -1809,7 +1809,7 @@ var require_react = __commonJS((exports, module) => {
   }
 });
 
-// /home/ted/TOP-stuff/personal-projects/chat-client/notes/bun-V2/node_modules/react/cjs/react-jsx-dev-runtime.development.js
+// /home/ted/TOP-stuff/personal-projects/chat-client/bun-V2/node_modules/react/cjs/react-jsx-dev-runtime.development.js
 var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
   var React = __toESM(require_react(), 1);
   if (true) {
@@ -2662,7 +2662,7 @@ var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
   }
 });
 
-// /home/ted/TOP-stuff/personal-projects/chat-client/notes/bun-V2/node_modules/react/jsx-dev-runtime.js
+// /home/ted/TOP-stuff/personal-projects/chat-client/bun-V2/node_modules/react/jsx-dev-runtime.js
 var require_jsx_dev_runtime = __commonJS((exports, module) => {
   var react_jsx_dev_runtime_development = __toESM(require_react_jsx_dev_runtime_development(), 1);
   if (false) {

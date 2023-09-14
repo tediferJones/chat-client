@@ -2,7 +2,16 @@
 import { renderToReadableStream } from 'react-dom/server';
 import TestComponent from './components/testComponent';
 import Home from './pages/home';
-import { resolvePtr } from 'dns';
+
+// EXAMPLE: https://www.npmjs.com/package/@bun-examples/react-ssr
+// Figure out what the bottom half of dev.tsx from example does
+// Figure out how to serve JS files when a JS file is requested
+// [ THIS IS THE FIX ] Consider creating a layout file, maybe thats part of what is causing issues
+// Try to create another page with a seperate component
+// Try to install tailwind, https://stackoverflow.com/questions/72919826/how-to-use-tailwind-with-bun
+// the build folder can probably be added to .gitignore
+//
+// YOU MUST NAVIGATE TO /home OR ELSE NOTHING WILL WORK
 
 // function JsxTest({ message }: { message: string }) {
 //   return (
@@ -19,7 +28,7 @@ const srcRouter = new Bun.FileSystemRouter({
   dir: './pages',
   style: 'nextjs',
 })
-console.log(srcRouter)
+// console.log(srcRouter)
 // console.log(Object.values(srcRouter.routes))
 
 await Bun.build({
@@ -48,6 +57,7 @@ const server = Bun.serve({
       console.log(srcMatch.src)
     }
     const builtMatch = buildRouter.match(req)
+    // If request is for a page, then return page component
     if (builtMatch) {
       console.log('MATCH FROM BUILT ROUTER')
       console.log(builtMatch.src)
@@ -55,7 +65,7 @@ const server = Bun.serve({
       const stream = await renderToReadableStream(<Home />, {
         // PATH TO PAGE IN BUILD FOLDER
         // bootstrapScriptContent: '/home.js',
-        // bootstrapScriptContent: `globalThis.PATH_TO_PAGE = "/${builtMatch.src}";`,
+        bootstrapScriptContent: `globalThis.PATH_TO_PAGE = "/${builtMatch.src}";`,
         // bootstrapScriptContent: `globalThis.PATH_TO_PAGE = "/home.js";`,
         // bootstrapScriptContent: 'console.log("LOADED")',
 
@@ -64,9 +74,34 @@ const server = Bun.serve({
       return new Response(stream, {
         headers: { 'Content-Type': 'text/html' }
       })
+    } else {
+      // IF THE REQ ISNT FOR A PAGE, THEN ITS FOR A FILE, either in ../build or ../public (doesnt exist, but it should)
+
+      let filePath = new URL(req.url).pathname;
+      // const rootPath = builtMatch ? '../build/pages' : '../build';
+      // if (filePath === '/') filePath = '/index.html'
+      // console.log(`YOU'RE REQUESTING A FILE THAT DOESNT EXIST`)
+      console.log(`REQUESTING FILE`)
+      // console.log(Bun.file('../build' + filePath))
+      // const file = Bun.file(filePath);
+      // console.log(file)
+      // console.log(await Bun.file(filePath).text())
+      // console.log(await Bun.file('poopydoodoo.js').text())
+      // console.log(await Bun.file('./hydrate.tsx').text())
+      // console.log(await Bun.file('../build/hydrate.js').text())
+
+      // IF SEARCHING FOR PAGE'S JS FILE, LOOK IN PAGES DIR OF BUILD
+      // Can get src of all pages by running builtRouter.routes.forEach(route => route.src).includes(filePathWithOutASlash)
+      if (filePath === '/home.js') filePath = '/pages' + filePath;
+      console.log(filePath)
+      console.log('../build' + filePath);
+      // return new Response(Bun.file('../build/hydrate.js'))
+      return new Response(Bun.file('../build' + filePath))
+      // return new Response(Bun.file(rootPath + filePath))
+
+      // return new Response(Bun.file(filePath))
+      // return new Response(`YOU'RE REQUESTING A FILE THAT DOESNT EXIST`)
     }
-    console.log(`YOU'RE REQUESTING A FILE THAT DOESNT EXIST`)
-    return new Response(`YOU'RE REQUESTING A FILE THAT DOESNT EXIST`)
   }
 })
 console.log(`Server is running on port ${server.port}`)
