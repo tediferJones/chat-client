@@ -20805,7 +20805,7 @@ var require_client = __commonJS((exports) => {
   var i;
 });
 
-// pagesde_mod
+// hydrate.tsx
 var client = __toESM(require_client(), 1);
 var jsx_dev_runtime = __toESM(require_jsx_dev_runtime(), 1);
 var { default: App } = await import(globalThis.PATH_TO_PAGE);

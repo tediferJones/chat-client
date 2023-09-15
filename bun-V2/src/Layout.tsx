@@ -1,10 +1,12 @@
 import React from 'react';
+// import '../public/output.css'
+// import '../src/input.css'
 
 // <link rel="manifest" href="/manifest.json" />
 // <img src={"/bunlogo.svg"} className="App-logo" alt="logo" />
 // <link rel="stylesheet" href="/index.css" />
 
-export function Layout(props: { title: string; children: React.ReactNode }) {
+export default function Layout(props: { title: string; children: React.ReactNode }) {
   return (
     <html>
       <head>
@@ -18,17 +20,17 @@ export function Layout(props: { title: string; children: React.ReactNode }) {
         />
         <link rel="apple-touch-icon" href="/logo192.png" />
         <title>{props.title}</title>
+        <link rel="stylesheet" href="/output.css" />
       </head>
       <body>
+        <div className='flex justify-around bg-blue-400 p-4'>
+          <h1>NAV BAR</h1>
+          <a href='/'>home</a>
+          <hr></hr>
+          <a href='/home'>page</a>
+        </div>
         <div className="App" role="main">
-          <article className="App-article">
-
-            <div style={{ height: "30px" }}></div>
-            <h3>{props.title}</h3>
-
-            <div style={{ height: "30px" }}></div>
             {props.children}
-          </article>
         </div>
       </body>
     </html>

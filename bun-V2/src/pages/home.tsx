@@ -1,13 +1,5 @@
 import TestComponent from '../components/testComponent';
-import { Layout } from '../Layout';
-
-// export default function () {
-//   return (
-//     <div>
-//       <TestComponent message='from pages/home' />
-//     </div>
-//   )
-// }
+import Layout from '../Layout';
 
 export default function () {
   return (

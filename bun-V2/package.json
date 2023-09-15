@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.tsx",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx bun --watch src/index.tsx"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/react": "^18.2.21",
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "tailwindcss": "^3.3.3"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
