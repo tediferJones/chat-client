@@ -1,11 +1,11 @@
 import TestComponent from '../components/testComponent';
 import Layout from '../Layout';
 
-export default function () {
+export default function Example() {
   return (
-    <Layout title='HOME PAGE'>
+    <Layout title='Example Page'>
       <div>
-        <TestComponent message='from pages/home' />
+        <TestComponent message='from example page' />
       </div>
     </Layout>
   )

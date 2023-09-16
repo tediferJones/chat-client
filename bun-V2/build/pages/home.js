@@ -1,13 +1,13 @@
 import {
 Layout
-} from "../chunk-c6a2e34cc3a21553.js";
+} from "../chunk-3e08d8a63ce6c144.js";
 import {
 __toESM,
 require_jsx_dev_runtime,
 require_react
-} from "../chunk-c8d9d06d6ffbb9b4.js";
+} from "../chunk-63abc4cc02303101.js";
 
-// components/testComponent.tsx
+// pagesmodules/scheduler/cjs/sched
 var import_react = __toESM(require_react(), 1);
 var jsx_dev_runtime = __toESM(require_jsx_dev_runtime(), 1);
 function TestComponent({ message }) {
@@ -38,18 +38,18 @@ function TestComponent({ message }) {
   }, undefined, true, undefined, this);
 }
 
-// pages/home.tsx
+// pagesmodules/sched
 var jsx_dev_runtime2 = __toESM(require_jsx_dev_runtime(), 1);
-function home_default() {
+function Example() {
   return jsx_dev_runtime2.jsxDEV(Layout, {
-    title: "HOME PAGE",
+    title: "Example Page",
     children: jsx_dev_runtime2.jsxDEV("div", {
       children: jsx_dev_runtime2.jsxDEV(TestComponent, {
-        message: "from pages/home"
+        message: "from example page"
       }, undefined, false, undefined, this)
     }, undefined, false, undefined, this)
   }, undefined, false, undefined, this);
 }
 export {
-  home_default as default
+  Example as default
 };

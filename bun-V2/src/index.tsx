@@ -12,24 +12,22 @@ import { renderToReadableStream } from 'react-dom/server';
 // [ DONE ] Try to create another page with a seperate component
 // [ DONE ] Get index page working
 // [ DONE ] Try to install tailwind, https://stackoverflow.com/questions/72919826/how-to-use-tailwind-with-bun
-// the build folder can probably be added to .gitignore
-// fix paths in this file so that it can be run from the root of the project
+// [ DONE ] the build folder can probably be added to .gitignore
+// [ DONE ] fix paths in this file so that it can be run from the root of the project
 //    - Might be a good idea to also create a start script in package.json
-//    - Consider using tsconfig path aliases, make on for @root = './', @components = './src/components'
-//
-// YOU MUST NAVIGATE TO /home OR ELSE NOTHING WILL WORK
+// Consider using tsconfig path aliases, make on for @root = './', @components = './src/components'
+// [ DONE ] Add error handling, what if users manually naviages /thisFileDoesntExist
 
-// function JsxTest({ message }: { message: string }) {
-//   return (
-//     <h1>Hello {message}</h1>
-//   )
-// }
-// console.log(<JsxTest message='TESTER' />)
-// console.log("Hello via Bun!");
+// USE THIS TO SO ALL PATHS ARE ALWAYS RELATIVE TO THIS FILE LOCATION
+// console.log(import.meta.dir)
+// console.log(import.meta.url)
+// All paths are based on the location of this file (the file that runs the server)
+const rootPath = import.meta.dir.replace('src', '');
+console.log(rootPath)
 
 const srcRouter = new Bun.FileSystemRouter({
-  dir: './pages',
-  // dir: './src/pages',
+  // dir: './pages',
+  dir: rootPath + 'src/pages',
   style: 'nextjs',
 })
 // console.log(srcRouter)
@@ -37,23 +35,27 @@ const srcRouter = new Bun.FileSystemRouter({
 
 // Bun.spawn(['touch', 'bunSpawnTest.txt'])
 const test = Bun.spawn(['npx', 'tailwindcss', '-i', 'src/input.css', '-o', 'public/output.css'], {
-  cwd: '../'
+  // cwd: '../'
+  cwd: rootPath,
 })
 
+// console.log(srcRouter.routes)
+// console.log(rootPath + 'build')
 await Bun.build({
   entrypoints: [
-    'hydrate.tsx',
+    rootPath + 'src/hydrate.tsx',
     ...Object.values(srcRouter.routes),
   ],
-  // outdir: '../build',
-  outdir:'../build',
+  // outdir:'../build',
+  // outdir: './build',
+  outdir: rootPath + 'build',
   target: 'browser',
   splitting: true,
 })
 
 const buildRouter = new Bun.FileSystemRouter({
-  dir: '../build/pages',
-  // dir: './build/pages',
+  // dir: '../build/pages',
+  dir: rootPath + 'build/pages',
   style: 'nextjs',
 })
 
@@ -90,6 +92,7 @@ const server = Bun.serve({
       let filePath = new URL(req.url).pathname;
       console.log('FILE PATH')
       console.log(filePath)
+      // let file;
       let file;
 
       // let file = Bun.file('../build' + filePath);
@@ -104,15 +107,23 @@ const server = Bun.serve({
       // }
 
       const paths = [
-        (filePath: string) => '../build/pages' + filePath,
-        (filePath: string) => '../build' + filePath,
-        (filePath: string) => '../public' + filePath,
+        // (filePath: string) => '../build/pages' + filePath,
+        // (filePath: string) => '../build' + filePath,
+        // (filePath: string) => '../public' + filePath,
+        (filePath: string) => rootPath + 'build/pages' + filePath,
+        (filePath: string) => rootPath + 'build' + filePath,
+        (filePath: string) => rootPath + 'public' + filePath,
       ]
       for (let i = 0; i < paths.length; i++) {
         file = Bun.file(paths[i](filePath))
         if (await file.exists()) {
           break
         }
+      }
+
+      // console.log(`file exists?: ${!!file}`)
+      if (file && !await file.exists()) {
+        return new Response(`Page ${filePath} not found`, { status: 404 })
       }
 
       // console.log(filePath)

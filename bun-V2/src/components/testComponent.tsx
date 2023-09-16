@@ -10,6 +10,8 @@ export default function TestComponent({ message }: { message: string }) {
       <h1>Hello {message}</h1>
       <h1>Counter: {state}</h1>
       <button onClick={() => setState(state + 1)}>INCREMENT</button>
+      <br/>
+      <button onClick={() => setState(state - 1)}>DECREMENT</button>
     </div>
   )
 }

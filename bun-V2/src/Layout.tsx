@@ -1,6 +1,4 @@
-import React from 'react';
-// import '../public/output.css'
-// import '../src/input.css'
+// import React from 'react';
 
 // <link rel="manifest" href="/manifest.json" />
 // <img src={"/bunlogo.svg"} className="App-logo" alt="logo" />
@@ -23,11 +21,10 @@ export default function Layout(props: { title: string; children: React.ReactNode
         <link rel="stylesheet" href="/output.css" />
       </head>
       <body>
-        <div className='flex justify-around bg-blue-400 p-4'>
-          <h1>NAV BAR</h1>
+        <div className='flex justify-around items-center bg-blue-400 p-4'>
+          <h1 className='bg-red-900 p-4'>React SSR w/ Bun</h1>
           <a href='/'>home</a>
-          <hr></hr>
-          <a href='/home'>page</a>
+          <a href='/example'>example page</a>
         </div>
         <div className="App" role="main">
             {props.children}
