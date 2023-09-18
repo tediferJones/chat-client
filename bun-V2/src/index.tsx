@@ -1,9 +1,4 @@
-// import React from 'react';
 import { renderToReadableStream } from 'react-dom/server';
-// import TestComponent from './components/testComponent';
-// import Home from './pages/home';
-// import Home from 'src/pages/home';
-// import idk from ''
 
 // EXAMPLE: https://www.npmjs.com/package/@bun-examples/react-ssr
 // [ DONE ] Figure out what the bottom half of dev.tsx from example does
@@ -14,59 +9,57 @@ import { renderToReadableStream } from 'react-dom/server';
 // [ DONE ] Try to install tailwind, https://stackoverflow.com/questions/72919826/how-to-use-tailwind-with-bun
 // [ DONE ] the build folder can probably be added to .gitignore
 // [ DONE ] fix paths in this file so that it can be run from the root of the project
-//    - Might be a good idea to also create a start script in package.json
+//    - [ DONE ] Might be a good idea to also create a start script in package.json
 // Consider using tsconfig path aliases, make on for @root = './', @components = './src/components'
 // [ DONE ] Add error handling, what if users manually naviages /thisFileDoesntExist
 // [ DONE ] Get API routes working
-// Get all pages and apiRoutes imported when server starts, dont import them dynamically
+// [ DONE ] Get all pages and apiRoutes imported when server starts, dont import them dynamically
 
-// USE THIS TO SO ALL PATHS ARE ALWAYS RELATIVE TO THIS FILE LOCATION
-// console.log(import.meta.dir)
-// console.log(import.meta.url)
 // All paths are based on the location of this file (the file that runs the server)
 const rootPath = import.meta.dir.replace('src', '');
-console.log(rootPath)
+// console.log(rootPath)
 
 const srcRouter = new Bun.FileSystemRouter({
-  // dir: './pages',
   dir: rootPath + 'src/pages',
   style: 'nextjs',
 })
 // console.log(srcRouter)
+// console.log(srcRouter.routes)
 // console.log(Object.values(srcRouter.routes))
 
-// Bun.spawn(['touch', 'bunSpawnTest.txt'])
-const test = Bun.spawn(['npx', 'tailwindcss', '-i', 'src/input.css', '-o', 'public/output.css'], {
-  // cwd: '../'
+// Generate css file from tailwind classes
+Bun.spawn(['npx', 'tailwindcss', '-i', 'src/input.css', '-o', 'public/output.css'], {
   cwd: rootPath,
 })
 
-console.log(srcRouter.routes)
-// console.log(rootPath + 'build')
 await Bun.build({
   entrypoints: [
     rootPath + 'src/hydrate.tsx',
     ...Object.values(srcRouter.routes),
   ],
-  // outdir:'../build',
-  // outdir: './build',
   outdir: rootPath + 'build',
   target: 'browser',
   splitting: true,
 })
 
 const buildRouter = new Bun.FileSystemRouter({
-  // dir: '../build/pages',
   dir: rootPath + 'build/pages',
   style: 'nextjs',
 })
 
 const apiRouter = new Bun.FileSystemRouter({
   dir: rootPath + 'src/apiRoutes',
-  // dir: rootPath + 'src/apiRoutes/api',
   style: 'nextjs',
-  // origin: 'api',
-  // assetPrefix: 'api/'
+})
+// console.log(srcRouter)
+
+const pages: { [key: string]: any } = {};
+Object.keys(srcRouter.routes).forEach(async (path) => {
+  pages[path] = await import(srcRouter.routes[path]);
+})
+const apiRoutes: { [key: string]: any } = {};
+Object.keys(apiRouter.routes).forEach(async (path) => {
+  apiRoutes[path] = await import(apiRouter.routes[path]);
 })
 
 const server = Bun.serve({
@@ -79,6 +72,7 @@ const server = Bun.serve({
     // }
     const builtMatch = buildRouter.match(req)
     const apiMatch = apiRouter.match(req)
+    const srcMatch = srcRouter.match(req)
 
     // console.log("REQ URL:")
     // console.log(req.url)
@@ -89,32 +83,59 @@ const server = Bun.serve({
     //   console.log('API ROUTE DETECTED')
     // }
 
-    if (builtMatch) {
-      console.log('MATCH FROM BUILT ROUTER')
-      console.log(builtMatch.src)
-      console.log(builtMatch)
+    // if (builtMatch) {
+    if (srcMatch && builtMatch) {
+      console.log('requesting page')
+      // console.log('MATCH FROM BUILT ROUTER')
+      // console.log(builtMatch.src)
+      // console.log(builtMatch)
+      // console.log('SRC ROUTER')
+      // const srcMatch = srcRouter.match(req)
 
-      const PageToRender = await import('./pages/' + builtMatch.src)
-      // const PageToRender = await import(builtMatch.filePath)
-      const stream = await renderToReadableStream(<PageToRender.default />, {
-        // PATH TO PAGE IN BUILD FOLDER
+      // if (!srcMatch) {
+      //   return new Response('Error, no source page found')
+      // }
+      // console.log('PAGE MATCHES')
+      // console.log(srcRouter)
+      // console.log(buildRouter)
+      // console.log(srcMatch)
+      // console.log(builtMatch)
+      // console.log(srcMatch.src)
+      // console.log(builtMatch.src)
+
+      // const PageToRender = await import('./pages/' + builtMatch.src)
+      // const PageToRender = await import(srcMatch.filePath)
+      // const stream = await renderToReadableStream(<PageToRender.default />, {
+      //   // PATH TO PAGE IN BUILD FOLDER
+      //   // bootstrapScriptContent: `globalThis.PATH_TO_PAGE = "/${builtMatch.src}";`,
+      //   bootstrapScriptContent: `globalThis.PATH_TO_PAGE = "/${builtMatch.src}";`,
+      //   // bootstrapScriptContent: 'console.log("LOADED")',
+
+      //   bootstrapModules: ['/hydrate.js'],
+      // })
+
+      // const PageToRender = pages[builtMatch.pathname]
+      // // console.log(typeof PageToRender)
+      // console.log(PageToRender)
+      // const stream = await renderToReadableStream(<PageToRender.default />, {
+      const stream = await renderToReadableStream(pages[builtMatch.pathname].default(), {
         bootstrapScriptContent: `globalThis.PATH_TO_PAGE = "/${builtMatch.src}";`,
-        // bootstrapScriptContent: 'console.log("LOADED")',
-
         bootstrapModules: ['/hydrate.js'],
-      })
-      return new Response(stream, {
-        headers: { 'Content-Type': 'text/html' }
-      })
+      });
+      // return new Response(stream, {
+      //   headers: { 'Content-Type': 'text/html' }
+      // })
+      return new Response(stream);
     } else if (apiMatch) {
       // Import script based in apiMatch, just like for builtMatch
       // Use req.method to select the correct function from the file
-      console.log(apiMatch);
+      // console.log(apiMatch);
+      // console.log(apiRoutes)
       // const apiRoute = await import('./apiRoutes/' + apiMatch.src)
-      const apiRoute = await import(apiMatch.filePath)
-      return apiRoute[req.method](req);
-      // const res = apiRoute[req.method](req);
-      // return res
+      // const apiRoute = await import(apiMatch.filePath)
+      // return apiRoute[req.method](req);
+
+      return apiRoutes[apiMatch.pathname][req.method](req)
     } else {
       console.log(`REQUESTING FILE`)
 
@@ -124,25 +145,11 @@ const server = Bun.serve({
       // Maybe rename to 'res'
       let file;
 
-      // let file = Bun.file('../build' + filePath);
-      // const fileIsPage = Object.keys(buildRouter.routes).includes(filePath.slice(0, filePath.lastIndexOf('.')))
-      // if (!await file.exists() && fileIsPage || filePath === '/index.js') {
-      //   console.log('GETTING PAGE FILE')
-      //   file = Bun.file('../build/pages' + filePath);
-      // }
-      // if (!await file.exists()) {
-      //   console.log('GETTING PUBLIC FILE')
-      //   file = Bun.file('../public' + filePath);
-      // }
-
       const paths = [
-        // (filePath: string) => '../build/pages' + filePath,
-        // (filePath: string) => '../build' + filePath,
-        // (filePath: string) => '../public' + filePath,
         (filePath: string) => rootPath + 'build/pages' + filePath,
         (filePath: string) => rootPath + 'build' + filePath,
         (filePath: string) => rootPath + 'public' + filePath,
-      ]
+      ];
       for (let i = 0; i < paths.length; i++) {
         file = Bun.file(paths[i](filePath))
         if (await file.exists()) {
@@ -152,24 +159,6 @@ const server = Bun.serve({
 
       // console.log(`file exists?: ${!!file}`)
       if (file && !await file.exists()) {
-        // API ROUTE?
-        // console.log(req.method)
-        // console.log(filePath)
-        // const apiRoutes = {
-        //   'verify': {
-        //     'GET': (req: any) => 'response'
-        //   }
-        // }
-        // let apiRes;
-        // if (filePath === '/api/verify') {
-        //   apiRes = 'hello from api route'
-        // } 
-        // // If its not an api route, its an error
-        // if (!apiRes) {
-        //   apiRes = `Page ${filePath} not found`, { status: 404 }
-        // }
-        // return new Response(apiRes)
-
         return new Response(`Page ${filePath} not found`, { status: 404 })
       }
 
