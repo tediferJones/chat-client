@@ -11,7 +11,7 @@ const srcRouter = new Bun.FileSystemRouter({
   dir: rootPath + 'src/pages',
   style: 'nextjs',
 })
-// console.log(srcRouter)
+console.log(srcRouter)
 // console.log(srcRouter.routes)
 // console.log(Object.values(srcRouter.routes))
 
@@ -34,6 +34,7 @@ const buildRouter = new Bun.FileSystemRouter({
   dir: rootPath + 'build/pages',
   style: 'nextjs',
 })
+console.log(buildRouter)
 
 const apiRouter = new Bun.FileSystemRouter({
   dir: rootPath + 'src/apiRoutes',
@@ -55,19 +56,21 @@ const server = Bun.serve({
   async fetch(req) {
     const builtMatch = buildRouter.match(req)
     const apiMatch = apiRouter.match(req)
-    const srcMatch = srcRouter.match(req)
+    // const srcMatch = srcRouter.match(req)
+    console.log(pages)
 
-    if (srcMatch && builtMatch) {
+    if (builtMatch) {
       console.log('requesting page')
       // const stream = await renderToReadableStream(<PageToRender.default />, {
-      const stream = await renderToReadableStream(pages[builtMatch.pathname].default(), {
+      console.log(builtMatch)
+      const stream = await renderToReadableStream(pages[builtMatch.name].default(builtMatch.params), {
         bootstrapScriptContent: `globalThis.PATH_TO_PAGE = "/${builtMatch.src}";`,
         bootstrapModules: ['/hydrate.js'],
       });
 
       return new Response(stream);
     } else if (apiMatch) {
-      return apiRoutes[apiMatch.pathname][req.method](req)
+      return apiRoutes[apiMatch.name][req.method](req)
     } else {
       console.log(`REQUESTING FILE`)
 
