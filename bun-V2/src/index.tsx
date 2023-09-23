@@ -11,7 +11,7 @@ const srcRouter = new Bun.FileSystemRouter({
   dir: rootPath + 'src/pages',
   style: 'nextjs',
 })
-console.log(srcRouter)
+// console.log(srcRouter)
 // console.log(srcRouter.routes)
 // console.log(Object.values(srcRouter.routes))
 
@@ -34,7 +34,7 @@ const buildRouter = new Bun.FileSystemRouter({
   dir: rootPath + 'build/pages',
   style: 'nextjs',
 })
-console.log(buildRouter)
+// console.log(buildRouter)
 
 const apiRouter = new Bun.FileSystemRouter({
   dir: rootPath + 'src/apiRoutes',
@@ -57,13 +57,17 @@ const server = Bun.serve({
     const builtMatch = buildRouter.match(req)
     const apiMatch = apiRouter.match(req)
     // const srcMatch = srcRouter.match(req)
-    console.log(pages)
+    // console.log(pages)
+    console.log(req.url)
 
-    if (builtMatch) {
+    if (builtMatch && builtMatch.pathname !== builtMatch.name + '.js') {
+    // if (builtMatch) {
       console.log('requesting page')
-      // const stream = await renderToReadableStream(<PageToRender.default />, {
+      console.log("MATCHED PAGE")
       console.log(builtMatch)
-      const stream = await renderToReadableStream(pages[builtMatch.name].default(builtMatch.params), {
+      // const stream = await renderToReadableStream(<PageToRender.default />, {
+      // const stream = await renderToReadableStream(<pages[builtMatch.name] />, {
+      const stream = await renderToReadableStream(pages[builtMatch.name].default({ params: builtMatch.params }), {
         bootstrapScriptContent: `globalThis.PATH_TO_PAGE = "/${builtMatch.src}";`,
         bootstrapModules: ['/hydrate.js'],
       });
